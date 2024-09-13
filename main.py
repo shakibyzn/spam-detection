@@ -57,6 +57,10 @@ def main() -> None:
 
     # model 
     model = BernoulliNB()
+    # log model parameters to wandb
+    wandb.config.model_name = model.__class__.__name__
+    wandb.config.model_config = model.get_params()
+
     model.fit(x_train_transformed, y_train)
     pred = model.predict(x_test_transformed)
     cls_report = classification_report(y_test, pred, output_dict=True)
