@@ -16,7 +16,6 @@ jobs:
     if: (github.event.issue.pull_request != null) && contains(github.event.comment.body, '/wandb')
     runs-on: ubuntu-latest
     steps:        
-    - uses: actions/checkout@v3
     - name: install dependencies
       run: pip install ghapi wandb wandb_workspaces
 
@@ -25,6 +24,7 @@ jobs:
       env:
         PAYLOAD: ${{ toJSON(github.event) }}
 
+    - uses: actions/checkout@v3
     - name: create a workspace
       shell: python
       run: |
