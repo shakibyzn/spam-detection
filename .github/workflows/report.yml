@@ -33,8 +33,9 @@ jobs:
         from ghapi.core import GhApi
         sys.path.append(os.getcwd())
         import workspace
-        owner,repo = os.environ['REPO'].split('/wandb')[-1].strip()
-        experiment_name = os.environ['BODY'].split('wandb')
+        
+        owner,repo = os.environ['REPO'].split('/')
+        experiment_name = os.environ['BODY'].split('/wandb')[-1].strip()
         api = GhApi(owner=owner, repo=repo)
         workspace_url = workspace.get_url(experiment_name)
         comment_body = f"A comparison between the linked run and the baseline is available in [this report]({workspace_url})."
