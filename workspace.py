@@ -16,7 +16,7 @@ def get_url(new_run_id: str) -> str:
     for run in runs:
     # Check if 'baseline' tag is present
         if 'baseline' in run.tags:
-            baseline_id = run.id
+            baseline_run_id = run.id
     
     workspace = ws.Workspace(
         name="Compare Runs",
