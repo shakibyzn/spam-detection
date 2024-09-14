@@ -56,7 +56,7 @@ def main() -> None:
     x_test_transformed = v.fit_transform(x_test)
 
     # model 
-    model = BernoulliNB()
+    model = BernoulliNB(alpha=0.5)
     # log model parameters to wandb
     wandb.config.model_name = model.__class__.__name__
     wandb.config.model_config = model.get_params()
