@@ -1,0 +1,47 @@
+name: comparison report
+on:
+  issue_comment:
+    paths-ignore:
+      - 'README.md'
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+
+jobs:
+  report:
+    if: (github.event.issue.pull_request != null) && contains(github.event.comment.body, '/wandb')
+    runs-on: ubuntu-latest
+    steps:        
+    - uses: actions/checkout@v3
+    - name: install dependencies
+      run: pip install ghapi wandb wandb_workspaces
+
+    - name: see payload # this step is for debugging purposes only, so you can see the payload. 
+      run: echo "PAYLOAD:\n${PAYLOAD}\n"
+      env:
+        PAYLOAD: ${{ toJSON(github.event) }}
+
+    - name: create a workspace
+      shell: python
+      run: |
+        import os
+        from ghapi.core import GhApi
+        import workspace
+        owner,repo = os.environ['REPO'].split('/wandb')[-1].strip()
+        experiment_name = os.environ['BODY'].split('wandb')
+        api = GhApi(owner=owner, repo=repo)
+        workspace_url = workspace.get_url(experiment_name)
+        comment_body = f"A comparison between the linked run and the baseline is available in [this report]({workspace_url})."
+        api.issues.create_comment(os.environ['NUMBER'], comment_body)
+      env:
+        NUMBER: ${{ github.event.issue.number }} 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
+        WANDB_PROJECT: ${{ secrets.WANDB_PROJECT }}
+        WANDB_ENTITY: ${{ secrets.WANDB_ENTITY }}
+        REPO: ${{ github.repository }}
+        BODY: ${{ github.event.comment.body }}
